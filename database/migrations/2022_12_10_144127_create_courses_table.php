@@ -15,18 +15,21 @@ class CreateCoursesTable extends Migration
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('term_id');
             $table->integer('Consecutivo');
-            $table->string('Codigo');
-            $table->string('Nombre');
-            $table->string('Codigo_docente');
-            $table->string('Nombre_docente');
-            $table->integer('Cupo_maximo');
+            $table->string('Codigo')->nullable();
+            $table->string('Nombre')->nullable();
+            $table->string('Codigo_docente')->nullable();
+            $table->string('Nombre_docente')->nullable();
+            $table->integer('Cupo_maximo')->nullable()->default(0);
             $table->integer('Consecutivo_periodo');
-            $table->string('Nombre_periodo');
-            $table->date('Fecha_inicio');
-            $table->date('Fecha_fin');
-            $table->integer('Cantidad_estudiantes_matriculados');
+            $table->string('Nombre_periodo')->nullable();
+            $table->date('Fecha_inicio')->nullable();
+            $table->date('Fecha_fin')->nullable();
+            $table->integer('Cantidad_estudiantes_matriculados')->nullable()->default(0);
             $table->timestamps();
+
+            $table->foreign('term_id')->references('id')->on('terms');
         });
     }
 

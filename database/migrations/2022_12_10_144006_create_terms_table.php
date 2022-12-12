@@ -15,13 +15,17 @@ class CreateTermsTable extends Migration
     {
         Schema::create('terms', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('campus_id');
             $table->integer('Consecutivo');
-            $table->string('Nombre');
-            $table->date('Fecha_inicio');
-            $table->date('Fecha_fin');
-            $table->integer('Ordenamiento');
+            $table->string('Nombre')->nullable();
+            $table->date('Fecha_inicio')->nullable();
+            $table->date('Fecha_fin')->nullable();
+            $table->integer('Ordenamiento')->nullable()->default(1);
             $table->boolean('Estado')->default(false);
+            $table->boolean('Habilitado')->default(true);
             $table->timestamps();
+
+            $table->foreign('campus_id')->references('id')->on('campuses');
         });
     }
 

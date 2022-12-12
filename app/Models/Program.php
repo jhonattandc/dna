@@ -28,13 +28,20 @@ class Program extends Model
         'Estado' => 'boolean'
     ];
 
-
     /**
      * Get the campus that owns the program.
      */
     public function campus()
     {
         return $this->belongsTo(Campus::class);
+    }
+
+    /**
+     * Get the courses for the program.
+     */
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class);
     }
 
     /**

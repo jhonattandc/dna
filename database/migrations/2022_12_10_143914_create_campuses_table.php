@@ -15,10 +15,9 @@ class CreateCampusesTable extends Migration
     {
         Schema::create('campuses', function (Blueprint $table) {
             $table->id();
-            $table->string('Codigo')->nullable();
             $table->string('Nombre');
-            $table->string('Secreto');
-            $table->date('last_sync_at');
+            $table->string('Secreto', 4080);
+            $table->enum('Cola', ['default', 'q1', 'q2', 'q3', 'q4', 'q5'])->default('default');
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTimetablesTable extends Migration
+class CreateCourseProgramTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,14 @@ class CreateTimetablesTable extends Migration
      */
     public function up()
     {
-        Schema::create('timetables', function (Blueprint $table) {
+        Schema::create('course_program', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('campus_id');
-            $table->string('Codigo');
-            $table->string('Nombre')->nullable();
-            $table->boolean('Estado')->default(false);
+            $table->unsignedBigInteger('course_id');
+            $table->unsignedBigInteger('program_id');
             $table->timestamps();
 
-            $table->foreign('campus_id')->references('id')->on('campuses');
+            $table->foreign('course_id')->references('id')->on('courses');
+            $table->foreign('program_id')->references('id')->on('programs');
         });
     }
 
@@ -32,6 +31,6 @@ class CreateTimetablesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('timetables');
+        Schema::dropIfExists('course_program');
     }
 }

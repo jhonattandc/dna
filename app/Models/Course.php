@@ -35,6 +35,14 @@ class Course extends Model
     }
 
     /**
+     * Get the program that owns the course.
+     */
+    public function programs()
+    {
+        return $this->belongsToMany(Program::class);
+    }
+
+    /**
      * Get the evaluations for the course.
      */
     public function evaluations()
