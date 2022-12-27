@@ -4,13 +4,9 @@ namespace App\Console\Commands;
 
 use App\Models\Campus;
 
-use App\Jobs\ProcessTerms;
-use App\Jobs\ProcessCourses;
-use App\Jobs\ProcessPrograms;
-use App\Jobs\ProcessTimetables;
-
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Artisan;
 
 class SyncQ10 extends Command
 {
@@ -19,7 +15,7 @@ class SyncQ10 extends Command
      *
      * @var string
      */
-    protected $signature = 'command:sync-q10';
+    protected $signature = 'sync:Q10';
 
     /**
      * The console command description.
@@ -45,12 +41,16 @@ class SyncQ10 extends Command
      */
     public function handle()
     {
-        logger('Starting sync-q10 command...');
         foreach (Campus::all() as $campus) {
-            ProcessTimetables::dispatch($campus)->onQueue($campus->Cola);
-            ProcessPrograms::dispatch($campus)->onQueue($campus->Cola);
-            ProcessTerms::dispatch($campus)->onQueue($campus->Cola);
-            ProcessCourses::dispatch($campus)->onQueue($campus->Cola);
+            $this->info('Sincronizando base de datos de Q10 de ' . $campus->Nombre);
+            Log::info("Sincronizando base de datos de Q10", ["Nombre"=>$campus->Nombre]);
+
+            Artisan::call('sync:timetablesQ10', ['campus' => $campus->id]);
+            Artisan::call('sync:programsQ10', ['campus' => $campus->id]);
+            Artisan::call('sync:termsQ10', ['campus' => $campus->id]);
+            Artisan::call('sync:subjectsQ10', ['campus' => $campus->id]);
+            Artisan::call('sync:sedeTimetablesQ10', ['campus' => $campus->id]);
+            Artisan::call('sync:coursesQ10', ['campus' => $campus->id]);
         }
         return 0;
     }

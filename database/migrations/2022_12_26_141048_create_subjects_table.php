@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTermsTable extends Migration
+class CreateSubjectsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,13 @@ class CreateTermsTable extends Migration
      */
     public function up()
     {
-        Schema::create('terms', function (Blueprint $table) {
+        Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('campus_id');
-            $table->integer('Consecutivo');
+            $table->string('Codigo');
             $table->string('Nombre')->nullable();
-            $table->date('Fecha_inicio')->nullable();
-            $table->date('Fecha_fin')->nullable();
-            $table->integer('Ordenamiento')->nullable()->default(1);
-            $table->boolean('Estado')->default(false);
-            $table->boolean('Habilitado')->default(false);
+            $table->string('Abreviacion')->nullable();
+            $table->boolean('Estado')->default(false)->nullable();
             $table->timestamps();
 
             $table->foreign('campus_id')->references('id')->on('campuses');
@@ -36,6 +33,6 @@ class CreateTermsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('terms');
+        Schema::dropIfExists('subjects');
     }
 }

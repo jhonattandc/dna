@@ -51,4 +51,20 @@ class Campus extends Model
     {
         return $this->hasMany(Timetable::class);
     }
+
+    /**
+     * Get the subjects for the campus.
+     */
+    public function subjects()
+    {
+        return $this->hasMany(Subject::class);
+    }
+
+    /**
+     * Get the prgorams for the campus.
+     */
+    public function sede_timetables()
+    {
+        return $this->hasMany(SedeTimetable::class);
+    }
 }

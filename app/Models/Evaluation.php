@@ -23,4 +23,12 @@ class Evaluation extends Model
     {
         return $this->belongsTo(Course::class);
     }
+
+    /**
+     * Get the subjects that owns the evaluation.
+     */
+    public function subjects()
+    {
+        return $this->belongsTo(Subject::class);
+    }
 }

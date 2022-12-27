@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClientifyContactController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +17,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::middleware('clientify')->prefix('clientify')->group(function (){
+    Route::post('/contact', [ClientifyContactController::class, 'store']);
+});
+
+Route::fallback(function (){
+    abort(404, 'API resource not found');
 });
