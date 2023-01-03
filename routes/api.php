@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\ClientifyContactController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\ClientifyDealController;
+use App\Http\Controllers\ClientifyContactController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,6 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('clientify')->prefix('clientify')->group(function (){
     Route::post('/contact', [ClientifyContactController::class, 'store']);
+    Route::post('/deal', [ClientifyDealController::class, 'store']);
 });
 
 Route::fallback(function (){

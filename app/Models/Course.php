@@ -35,11 +35,27 @@ class Course extends Model
     }
 
     /**
+     * Get the tkcourse that owns the course.
+     */
+    public function tkcourse()
+    {
+        return $this->belongsTo(Tkcourse::class);
+    }
+
+    /**
      * Get the program that owns the course.
      */
     public function programs()
     {
         return $this->belongsToMany(Program::class);
+    }
+
+    /**
+     * Get the students that owns the course.
+     */
+    public function students()
+    {
+        return $this->belongsToMany(Student::class);
     }
 
     /**

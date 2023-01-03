@@ -47,7 +47,7 @@ class EvaluationsQ10 extends Command
     public function handle()
     {
         foreach (Campus::all() as $campus) {
-            Log::info("Obteniendo todas las evaluciones de un periodo activo", ["Nombre"=>$campus->Nombre]);
+            Log::debug("Obteniendo todas las evaluciones de un periodo activo", ["Nombre"=>$campus->Nombre]);
             $this->info('Obteniendo todas las evaluaciones de los periodos activos de '.$campus->Nombre);
             $client = new Q10API('/evaluaciones', $campus->Secreto);
 
@@ -79,7 +79,14 @@ class EvaluationsQ10 extends Command
                         ->first();
 
                     if(is_null($subject) && is_null($course)) {
-                        Log::warning("Asignatura ni curso encontrados", ["response"=>$object_json]);
+                        Log::warning("Asignatura ni curso encontrados mientras se procesan las evaluaciones",
+                            [
+                                "Sede"=>$campus->Nombre,
+                                "Nombre_asignatura"=>$object_json['Nombre_asignatura'],
+                                "Nombre_periodo"=>$object_json['Nombre_periodo'],
+                                "Nombre_programa"=>$object_json['Nombre_programa'],
+                                "Nombre_curso"=>$object_json['Nombre_curso']
+                            ]);
                         return;
                     }
                     try{

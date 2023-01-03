@@ -54,8 +54,8 @@ class CoursesQ10 extends Command
         $courses = $response->map(function ($object_json) use ($campus){
             $term = $campus->terms()->where('Consecutivo', $object_json['Consecutivo_periodo'])->first();
             if (is_null($term)) {
-                $this->warn('No se encontró el periodo ' . $object_json['Consecutivo_periodo']);
-                Log::warning('No se encontró el periodo', ['term'=>$object_json['Consecutivo_periodo']]);
+                $this->warn('No se encontró el periodo con id '.$object_json['Consecutivo_periodo'].' mientras se procesaba el curso '.$object_json['Codigo']);
+                Log::warning('No se encontró el periodo mientras se procesan los cursos', ['Sede'=>$campus->Nombre, 'Curso'=>$object_json['Codigo'], 'Periodo'=>$object_json['Consecutivo_periodo']]);
                 return;
             }
             try{

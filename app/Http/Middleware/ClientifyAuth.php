@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ClientifyAuth
 {
@@ -16,7 +17,7 @@ class ClientifyAuth
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->bearerToken() !== env('CLIENTIFY_API')) {
+        if ($request->header('Authorization') !== 'token ' . env('CLIENTIFY_API')) {
             abort(421, "Clientify authorization token not valid");
         }
         return $next($request);

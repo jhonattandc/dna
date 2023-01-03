@@ -15,8 +15,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('sync:Q10')->weekly();
-        $schedule->command('sync:evaluationsQ10')->daily();
+        $schedule->command('sync:Q10')->daily()->withoutOverlapping();
+        $schedule->command('sync:evaluationsQ10')->everyFourHours()->withoutOverlapping();
+        $schedule->command('sync:TKcourse')->daily()->withoutOverlapping();
     }
 
     /**

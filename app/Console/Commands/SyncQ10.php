@@ -6,7 +6,6 @@ use App\Models\Campus;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Artisan;
 
 class SyncQ10 extends Command
 {
@@ -43,14 +42,14 @@ class SyncQ10 extends Command
     {
         foreach (Campus::all() as $campus) {
             $this->info('Sincronizando base de datos de Q10 de ' . $campus->Nombre);
-            Log::info("Sincronizando base de datos de Q10", ["Nombre"=>$campus->Nombre]);
+            Log::debug("Sincronizando base de datos de Q10", ["Nombre"=>$campus->Nombre]);
 
-            Artisan::call('sync:timetablesQ10', ['campus' => $campus->id]);
-            Artisan::call('sync:programsQ10', ['campus' => $campus->id]);
-            Artisan::call('sync:termsQ10', ['campus' => $campus->id]);
-            Artisan::call('sync:subjectsQ10', ['campus' => $campus->id]);
-            Artisan::call('sync:sedeTimetablesQ10', ['campus' => $campus->id]);
-            Artisan::call('sync:coursesQ10', ['campus' => $campus->id]);
+            $this->call('sync:timetablesQ10', ['campus' => $campus->id]);
+            $this->call('sync:programsQ10', ['campus' => $campus->id]);
+            $this->call('sync:termsQ10', ['campus' => $campus->id]);
+            $this->call('sync:subjectsQ10', ['campus' => $campus->id]);
+            $this->call('sync:sedeTimetablesQ10', ['campus' => $campus->id]);
+            $this->call('sync:coursesQ10', ['campus' => $campus->id]);
         }
         return 0;
     }

@@ -58,8 +58,11 @@ class SedeTimetablesQ10 extends Command
             } catch (ModelNotFoundException $e) {
                 $timetable = $campus->timetables()->where('Codigo', $object_json['Codigo_jornada'])->first();;
                 if(is_null($timetable)){
-                    $this->warn('No se encontró la jornada ' . $object_json['Codigo_jornada']);
-                    Log::warning('No se encontró la jornada', ['timetable'=>$object_json['Codigo_jornada']]);
+                    $this->warn('No se encontró la jornada mientras se procesan las sede_jornadas ' . $object_json['Codigo_jornada']);
+                    Log::warning('No se encontró la jornada  mientras se procesan las sede_jornadas', [
+                        'Sede'=>$campus->Nombre,
+                        'Codigo_jornada'=>$object_json['Codigo_jornada']
+                    ]);
                     return;
                 }
                 $sede_timetable = new SedeTimetable($object_json);

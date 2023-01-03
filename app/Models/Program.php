@@ -43,12 +43,4 @@ class Program extends Model
     {
         return $this->belongsToMany(Course::class);
     }
-
-    /**
-     * The student that belong to the timetable.
-     */
-    public function students()
-    {
-        return $this->belongsToMany(Student::class);
-    }
 }

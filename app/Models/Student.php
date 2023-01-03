@@ -27,26 +27,10 @@ class Student extends Model
     ];
 
     /**
-     * The programs that belong to the students.
+     * The courses that belong to the students.
      */
-    public function programs()
+    public function courses()
     {
-        return $this->belongsToMany(Program::class);
-    }
-
-    /**
-     * The programs that belong to the students.
-     */
-    public function terms()
-    {
-        return $this->belongsToMany(Term::class);
-    }
-
-    /**
-     * The programs that belong to the students.
-     */
-    public function timetable()
-    {
-        return $this->belongsToMany(Timetable::class);
+        return $this->belongsToMany(Course::class);
     }
 }

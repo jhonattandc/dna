@@ -42,12 +42,4 @@ class Term extends Model
     {
         return $this->belongsTo(Campus::class);
     }
-
-    /**
-     * The student that belong to the timetable.
-     */
-    public function students()
-    {
-        return $this->belongsToMany(Student::class);
-    }
 }

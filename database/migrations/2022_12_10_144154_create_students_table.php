@@ -33,12 +33,6 @@ class CreateStudentsTable extends Migration
             $table->string('Codigo_matricula');
             $table->date('Fecha_matricula');
             $table->string('Condicion_matricula');
-            // $table->string('Nombre_sede');
-            // $table->string('Nombre_jornada');
-            // $table->string('Nombre_programa');
-            // $table->string('Nombre_grupo');
-            // $table->string('Nombre_periodo');
-            // $table->string('Nombre_nivel');
             $table->timestamps();
         });
     }
