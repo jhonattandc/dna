@@ -45,6 +45,7 @@ class SyncThinkificCourses extends Command
     {
         $courses = $client->get_paginated('courses');
         $courses = $courses->map(function($object_json){
+            $object_json = json_decode(json_encode($object_json), true);
             try{
                 $course = Tkcourse::where('id', $object_json['id'])->firstOrFail();
                 $course->fill($object_json);

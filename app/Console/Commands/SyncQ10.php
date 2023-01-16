@@ -42,14 +42,14 @@ class SyncQ10 extends Command
     {
         foreach (Campus::all() as $campus) {
             $this->info('Sincronizando base de datos de Q10 de ' . $campus->Nombre);
-            Log::debug("Sincronizando base de datos de Q10", ["Nombre"=>$campus->Nombre]);
-
-            $this->call('sync:timetablesQ10', ['campus' => $campus->id]);
-            $this->call('sync:programsQ10', ['campus' => $campus->id]);
-            $this->call('sync:termsQ10', ['campus' => $campus->id]);
-            $this->call('sync:subjectsQ10', ['campus' => $campus->id]);
-            $this->call('sync:sedeTimetablesQ10', ['campus' => $campus->id]);
-            $this->call('sync:coursesQ10', ['campus' => $campus->id]);
+            Log::info("Sincronizando base de datos de Q10", ["Nombre"=>$campus->Nombre]);
+            $this->call('sync:Q10timetables', ['campus' => $campus->id]);
+            $this->call('sync:Q10programs', ['campus' => $campus->id]);
+            $this->call('sync:Q10terms', ['campus' => $campus->id]);
+            $this->call('sync:Q10subjects', ['campus' => $campus->id]);
+            $this->call('sync:Q10sedeTimetables', ['campus' => $campus->id]);
+            $this->call('sync:Q10courses', ['campus' => $campus->id]);
+            Log::info("Actualización finalizada sin problemas");
         }
         return 0;
     }
