@@ -16,7 +16,7 @@ class SyncQ10Subjects extends Command
      *
      * @var string
      */
-    protected $signature = 'sync:Q10subjects {campus=1}';
+    protected $signature = 'sync:Q10subjects {campus}';
 
     /**
      * The console command description.
@@ -44,8 +44,10 @@ class SyncQ10Subjects extends Command
     {
         $this->info('Obteniendo las asignaturas');
 
-        $campus_id = $this->argument('campus');
-        $campus = Campus::find($campus_id);
+        $campus = $this->argument('campus');
+        if (is_int($campus) || is_string($campus)){
+            $campus = Campus::find($campus);
+        }
 
         $client = new Q10API('/asignaturas', $campus->Secreto);
         $response = $client->get_paginated();

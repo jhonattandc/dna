@@ -43,18 +43,32 @@ class SyncThinkificCourses extends Command
      */
     public function handle(ThinkificAPI $client)
     {
-        $courses = $client->get_paginated('courses');
-        $courses = $courses->map(function($object_json){
-            $object_json = json_decode(json_encode($object_json), true);
-            try{
-                $course = Tkcourse::where('id', $object_json['id'])->firstOrFail();
-                $course->fill($object_json);
-            } catch (ModelNotFoundException $e) {
-                $course = new Tkcourse($object_json);
-            }
-            $course->save();
-            return $course;
-        });
+        try {
+            $courses = $client->get_paginated('courses');
+            # Status bar
+            $bar = $this->output->createProgressBar(count($courses));
+            $bar->start();
+
+            $courses = $courses->map(function($object_json) use ($bar) {
+                $object_json = json_decode(json_encode($object_json), true);
+                try{
+                    $course = Tkcourse::where('id', $object_json['id'])->firstOrFail();
+                    $course->fill($object_json);
+                } catch (ModelNotFoundException $e) {
+                    $course = new Tkcourse($object_json);
+                }
+                $course->save();
+                $bar->advance();
+                return $course;
+            });
+
+            $bar->finish();
+            $this->info(" ¡Cursos sincronizados!");
+        } catch (\Throwable $th) {
+            $this->error("Ocurrio un error creando un usuario en thinkificv, revisar el log");
+            Log::error("Error creating an User in thinkific", ["exception"=>$th]);
+        }
+
         return 0;
     }
 }

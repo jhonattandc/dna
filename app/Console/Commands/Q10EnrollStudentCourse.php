@@ -42,11 +42,11 @@ class Q10EnrollStudentCourse extends Command
     public function handle()
     {
         $student = $this->argument('student');
-        if (is_int($student)){
+        if (is_int($student) || is_string($student)){
             $student = Student::find($student);
         }
         $course = $this->argument('course');
-        if (is_int($course)){
+        if (is_int($course) || is_string($student)){
             $course = Course::find($course);
         }
         if (! $student->courses()->where('courses.id',$course->id)->exists()){

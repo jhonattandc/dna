@@ -41,11 +41,11 @@ class Q10EnrollCourseProgram extends Command
     public function handle()
     {
         $course = $this->argument('course');
-        if (is_int($course)){
+        if (is_int($course) || is_string($course)){
             $course = Course::find($course);
         }
         $program = $this->argument('program');
-        if (is_int($program)){
+        if (is_int($program) || is_string($program)){
             $program = Program::find($program);
         }
         if (! $course->programs()->where('programs.id', $program->id)->exists()){

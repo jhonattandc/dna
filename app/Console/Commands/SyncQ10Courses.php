@@ -17,7 +17,7 @@ class SyncQ10Courses extends Command
      *
      * @var string
      */
-    protected $signature = 'sync:Q10courses {campus=1}';
+    protected $signature = 'sync:Q10courses {campus}';
 
     /**
      * The console command description.
@@ -45,8 +45,10 @@ class SyncQ10Courses extends Command
     {
         $this->info('Obteniendo los cursos');
 
-        $campus_id = $this->argument('campus');
-        $campus = Campus::find($campus_id);
+        $campus = $this->argument('campus');
+        if (is_int($campus) || is_string($campus)){
+            $campus = Campus::find($campus);
+        }
 
         $client = new Q10API('/cursos', $campus->Secreto);
         $response = $client->get_paginated();

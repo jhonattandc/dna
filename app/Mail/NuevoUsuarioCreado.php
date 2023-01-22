@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class TKUserCreated extends Mailable
+class NuevoUsuarioCreado extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -37,6 +37,6 @@ class TKUserCreated extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.thinkific.userCreated');
+        return $this->view('emails.thinkific.userCreated', ['student'=>$this->student]);
     }
 }

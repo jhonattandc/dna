@@ -62,10 +62,10 @@ class ThinkificAPI extends Client
      *
      * @return mixed
      */
-    public function enroll_user($user, $course) {
+    public function enroll_user($user_id, $course) {
         $enroll = $this->get_paginated('enrollments', [
             'query' => [
-                'query[user_id]' => $user->id,
+                'query[user_id]' => $user_id,
                 'query[course_id]' => $course->id
             ]
         ]);
@@ -74,7 +74,7 @@ class ThinkificAPI extends Client
             $enrollments = $this->post('enrollments', [
                 'json' => [
                     'course_id'=>$course->id,
-                    'user_id'=>$user->id,
+                    'user_id'=>$user_id,
                     'activated_at'=>date('c')
                 ]
             ]);

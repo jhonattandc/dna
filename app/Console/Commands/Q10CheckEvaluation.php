@@ -43,9 +43,10 @@ class Q10CheckEvaluation extends Command
     public function handle()
     {
         $evaluation = $this->argument('evaluation');
-        if (is_int($evaluation)){
+        if (is_int($evaluation) || is_string($evaluation)){
             $evaluation = Evaluation::find($evaluation);
         }
+
         if ($evaluation->isDirty('Cantidad_inasistencia')){
             if($evaluation->Cantidad_inasistencia > 2){
                 Q10StudentFailed::dispatch($evaluation);

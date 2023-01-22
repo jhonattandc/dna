@@ -4,6 +4,7 @@ Esta es una aplicación que se encarga de sincronizar la información de las tre
 
 - APP
 
+## Instalación
 Ante dudas consultar [Laravel Documentación](https://laravel.com/docs/8.x/releases)
 
 ## Installation

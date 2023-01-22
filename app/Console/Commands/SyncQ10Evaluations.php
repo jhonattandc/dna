@@ -57,6 +57,8 @@ class SyncQ10Evaluations extends Command
                 ->where('Habilitado', true)
                 ->get();
 
+            $bar = $this->output->createProgressBar(count($programs_terms));
+            $bar->start();
             foreach ($programs_terms as $row) {
 
                 $response = $client->get_paginated([
@@ -100,12 +102,16 @@ class SyncQ10Evaluations extends Command
                         $evaluation = new Evaluation($object_json);
                         $evaluation->subject_id = !is_null($subject) ? $subject->id : null;
                         $evaluation->course_id = !is_null($course) ? $course->id : null;
-                        Log::debug("Nueva evaluaciòn creada", ['evaluacion'=>$evaluation->id]);
+                        Log::debug("Nueva evaluación creada", ['evaluacion'=>$evaluation->id]);
                     }
                     $evaluation->save();
                     return $evaluation;
                 });
+
+                $bar->advance();
             }
+            $bar->finish();
+            $this->info(" ¡Evaluaciones sincronizadas de ".$campus->Nombre."!");
         }
         return 0;
     }
