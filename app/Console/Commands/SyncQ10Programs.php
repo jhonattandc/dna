@@ -9,6 +9,7 @@ use App\Services\Q10API;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class SyncQ10Programs extends Command
 {
@@ -43,6 +44,7 @@ class SyncQ10Programs extends Command
      */
     public function handle()
     {
+        DB::disableQueryLog();
         $this->info('Obteniendo los programas');
 
         $campus = $this->argument('campus');

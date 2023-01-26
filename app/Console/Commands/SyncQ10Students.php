@@ -9,6 +9,7 @@ use App\Services\Q10APIV2;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 
 class SyncQ10Students extends Command
@@ -44,53 +45,9 @@ class SyncQ10Students extends Command
      */
     public function handle()
     {
+        DB::disableQueryLog();
         foreach (Campus::all() as $campus) {
-            Log::debug("Obteniendo todos los estudiantes", ["Nombre"=>$campus->Nombre]);
-            $this->info('Obteniendo todos los estudiantes de '.$campus->Nombre);
-            $client = new Q10APIV2([
-                'headers' => ['Api-Key'=>$campus->Secreto]
-            ]);
-            $users = $client->get_paginated('usuarios');
-
-            $bar = $this->output->createProgressBar(count($users));
-            $bar->start();
-            foreach ($users as $user) {
-                # Se verifica que el usuario es un estudiante
-                $is_student = false;
-                foreach ($user['Roles'] as $role) {
-                    if (intval($role['Codigo']) == 1) {
-                        $is_student = true;
-                    }
-                }
-                if(!$is_student) {
-                    $bar->advance();
-                    continue;
-                }
-
-                # Se busca en la base de datos local, si no se encuentra se guardan sus datos
-                try {
-                    $student = Student::where('Codigo_estudiante', $user['Codigo_persona'])->firstOrFail();
-                } catch (ModelNotFoundException $e) {
-                    $response = $client->get('estudiantes/'.$user['Codigo_persona']);
-                    $student_j = json_decode($response->getBody(), true);
-                    if($response->getStatusCode() > 200 && $response->getStatusCode() < 300){
-                        $student = Student::create($student_j);
-                    } else {
-                        Log::warning("No se pudo obtener el detalle del estudiante", ["code"=>$response->getStatusCode(), "body"=>$response->getBody()]);
-                        $this->warn("No se pudo obtener el detalle del estudiante " . $user['Codigo_persona']);
-                        $bar->advance();
-                        continue;
-                    }
-                }
-
-                # Se verifica que este registrado en thinkific y se matricula en onboarding
-                $this->call('thinkific:enrollQ10default', ['student'=>$student]);
-                sleep(0.05);
-                $bar->advance();
-            }
-            $bar->finish();
-            $this->info(" ¡Estudiantes sincronizados de ".$campus->Nombre."!");
-            sleep(0.1);
+            $this->call("q10:getStudents", ["campus"=>$campus]);
         }
     }
 }

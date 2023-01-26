@@ -45,6 +45,7 @@ class SyncQ10CourseStudents extends Command
      */
     public function handle()
     {
+        DB::disableQueryLog();
         foreach (Campus::all() as $campus) {
             Log::debug("Obteniendo todos los estudiantes", ["Nombre"=>$campus->Nombre]);
             $this->info('Obteniendo todos los estudiantes de '.$campus->Nombre);

@@ -8,6 +8,7 @@ use App\Services\ThinkificAPI;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class SyncThinkificCourses extends Command
 {
@@ -44,6 +45,7 @@ class SyncThinkificCourses extends Command
     public function handle(ThinkificAPI $client)
     {
         try {
+            DB::disableQueryLog();
             $courses = $client->get_paginated('courses');
             # Status bar
             $bar = $this->output->createProgressBar(count($courses));

@@ -9,6 +9,7 @@ use App\Models\SedeTimetable;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class SyncQ10SedeTimetables extends Command
 {
@@ -43,6 +44,7 @@ class SyncQ10SedeTimetables extends Command
      */
     public function handle()
     {
+        DB::disableQueryLog();
         $this->info('Obteniendo las sede-jornadas');
 
         $campus = $this->argument('campus');

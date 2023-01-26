@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use Exception;
+
 use App\Models\Student;
 use App\Services\ThinkificAPI;
 use App\Http\Resources\StudentTKResource;
@@ -59,7 +61,7 @@ class ThinkificCreateQ10Student extends Command
                 $response = $client->post('users', [
                     'json' => new StudentTKResource($student)
                 ]);
-                if($response->getStatusCode() > 200 && $response->getStatusCode() < 300){
+                if($response->getStatusCode() >= 200 && $response->getStatusCode() < 300){
                     TKStudentCreated::dispatch($student);
                     Log::debug('New user created on thinkific platform', ['User'=>$student->Email]);
                     return json_decode($response->getBody())->id;
@@ -67,9 +69,9 @@ class ThinkificCreateQ10Student extends Command
             }else {
                 return $users->first()->id;
             }
-        } catch (\Throwable $th) {
+        } catch (Exception $e) {
             $this->error("Ocurrio un error creando un usuario en thinkificv, revisar el log");
-            Log::error("Error creating an User in thinkific", ["exception"=>$th]);
+            Log::error("Error creating an User in thinkific", ["exception"=>$e->getMessage()]);
         }
         return 0;
     }

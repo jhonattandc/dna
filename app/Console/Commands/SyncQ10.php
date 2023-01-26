@@ -6,6 +6,7 @@ use App\Models\Campus;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class SyncQ10 extends Command
 {
@@ -40,6 +41,7 @@ class SyncQ10 extends Command
      */
     public function handle()
     {
+        DB::disableQueryLog();
         foreach (Campus::all() as $campus) {
             $this->info('Sincronizando base de datos de Q10 de ' . $campus->Nombre);
             Log::info("Sincronizando base de datos de Q10", ["Nombre"=>$campus->Nombre]);
