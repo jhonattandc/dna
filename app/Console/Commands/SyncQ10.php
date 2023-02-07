@@ -51,6 +51,7 @@ class SyncQ10 extends Command
             $this->call('sync:Q10subjects', ['campus' => $campus->id]);
             $this->call('sync:Q10sedeTimetables', ['campus' => $campus->id]);
             $this->call('sync:Q10courses', ['campus' => $campus->id]);
+            $this->info('Actualización finalizada sin problemas');
             Log::info("Actualización finalizada sin problemas");
         }
         return 0;

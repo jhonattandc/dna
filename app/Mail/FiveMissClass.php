@@ -3,12 +3,14 @@
 namespace App\Mail;
 
 use App\Models\Student;
+use App\Models\Course;
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class NuevoUsuarioCreado extends Mailable
+class FiveMissClass extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -20,14 +22,21 @@ class NuevoUsuarioCreado extends Mailable
     public $student;
 
     /**
+     * The course instance.
+     *
+     * @var \App\Models\Course
+     */
+    public $course;
+
+    /**
      * Create a new message instance.
      *
-     * @param  \App\Models\Student  $student
      * @return void
      */
-    public function __construct(Student $student)
+    public function __construct(Student $student, Course $course)
     {
         $this->student = $student;
+        $this->course = $course;
     }
 
     /**
@@ -37,6 +46,9 @@ class NuevoUsuarioCreado extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.thinkific.userCreated', ['student'=>$this->student]);
+        return $this->subject(', reprobaste tu curso')->
+            view('emails.q10.fiveMissClass',
+                ['student'=>$this->student, 'course'=>$this->course]
+            );
     }
 }

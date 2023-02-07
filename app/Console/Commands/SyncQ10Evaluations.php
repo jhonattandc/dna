@@ -50,6 +50,8 @@ class SyncQ10Evaluations extends Command
         foreach (Campus::all() as $campus) {
             Log::debug("Obteniendo todas las evaluciones de un periodo activo", ["Nombre"=>$campus->Nombre]);
             $this->info('Obteniendo todas las evaluaciones de los periodos activos de '.$campus->Nombre);
+
+            // Creo un cliente http para consultar el api de Q10
             $client = new Q10API('/evaluaciones', $campus->Secreto);
 
             $programs_terms = DB::table('programs')->crossJoin('terms')

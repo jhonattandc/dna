@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('sync:Q10')->daily()->withoutOverlapping();
         $schedule->command('sync:TKcourse')->daily()->withoutOverlapping();
         $schedule->command('sync:Q10evaluations')->everyFourHours()->withoutOverlapping();
-        $schedule->command('sync:TKstudents')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('sync:TKstudents')->everyFifteenMinutes()->withoutOverlapping();
         $schedule->command('sync:Q10Students')->everyThreeHours()->withoutOverlapping();
     }
 
