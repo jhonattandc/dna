@@ -46,7 +46,7 @@ class PassedCourse extends Mailable
      */
     public function build()
     {
-        return $this->subject('Felicitaciones '.$this->student->Primer_Nombre.', ¡aprobaste tu curso! 🎉🎉')
+        return $this->subject('Felicitaciones '.$this->student->Primer_Nombre.', ¡aprobaste tu curso!')
             ->view('emails.q10.passedCourse',
             ['student'=>$this->student, 'course'=>$this->course]);
     }
