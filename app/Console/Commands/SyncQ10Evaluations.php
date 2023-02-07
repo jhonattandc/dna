@@ -47,6 +47,7 @@ class SyncQ10Evaluations extends Command
     public function handle()
     {
         DB::disableQueryLog();
+        //TODO: Revisar Logica
         foreach (Campus::all() as $campus) {
             Log::debug("Obteniendo todas las evaluciones de un periodo activo", ["Nombre"=>$campus->Nombre]);
             $this->info('Obteniendo todas las evaluaciones de los periodos activos de '.$campus->Nombre);

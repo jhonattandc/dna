@@ -40,7 +40,6 @@ class CampusController extends Controller
     public function store(CampusRequest $request)
     {
         Campus::create($request->validated());
-        #TODO: usar archivos de lenguaje
         return redirect()->route('admin.campus.index')
             ->with('success','Campus created successfully.');
     }

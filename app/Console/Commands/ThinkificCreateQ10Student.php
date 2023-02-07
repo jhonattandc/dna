@@ -58,11 +58,6 @@ class ThinkificCreateQ10Student extends Command
                 Log::error("El estudiante no existe");
                 return 0;
             }
-            if ($student->thinkific_id) {
-                $this->error("El estudiante ya tiene una cuenta en thinkific");
-                Log::error("El estudiante ya tiene una cuenta en thinkific");
-                return 0;
-            }
             if ($student->Email == null) {
                 $this->error("El estudiante no tiene un correo electronico");
                 Log::error("El estudiante no tiene un correo electronico");

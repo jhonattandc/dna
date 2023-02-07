@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\Evaluation;
+
+use App\Events\Q10StudentMiss;
 use App\Events\Q10StudentFailed;
-use App\Events\Q10StudentAbsented;
+use App\Events\Q10StudentPassed;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -42,6 +44,10 @@ class Q10CheckEvaluation extends Command
      */
     public function handle()
     {
+        //TODO: Cambiar el argumento que recivo por el json que recibo de Q10
+        //TODO: Modificar la logica para buscar en la base de datos la evaluacion
+        //      comparar el valor guardado en base de datos y el valor de aprobado/reprobado
+        //TODO: Disparar eventos segun sea el caso
         $evaluation = $this->argument('evaluation');
         if (is_int($evaluation) || is_string($evaluation)){
             $evaluation = Evaluation::find($evaluation);
@@ -51,7 +57,7 @@ class Q10CheckEvaluation extends Command
             if($evaluation->Cantidad_inasistencia > 2){
                 Q10StudentFailed::dispatch($evaluation);
             } else if ($evaluation->Cantidad_inasistencia > 0) {
-                Q10StudentAbsented::dispatch($evaluation);
+                Q10StudentMiss::dispatch($evaluation);
             }
         }
         return 0;

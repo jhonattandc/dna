@@ -56,8 +56,6 @@ class Q10GetStudents extends Command
         ]);
         $users = $client->get_paginated('usuarios');
 
-        $default_course = Tkcourse::where('default', true)->first();
-
         $bar = $this->output->createProgressBar(count($users));
         $bar->start();
         foreach ($users as $user) {
@@ -88,15 +86,7 @@ class Q10GetStudents extends Command
                     continue;
                 }
             }
-
-            # Se verifica que este registrado en thinkific y se matricula en onboarding
-            sleep(0.5);
-            // if(is_null($default_course) || is_null($student->tk_id)){
-            //     $bar->advance();
-            //     continue;
-            // }
-            // $tk_client->enroll_user($student->tk_id, $default_course);
-            // $bar->advance();
+            sleep(0.1);
         }
         $bar->finish();
         $this->info(" ¡Estudiantes sincronizados de ".$campus->Nombre."!");

@@ -51,10 +51,6 @@ class SyncThinkificStudents extends Command
     {
         try {
             DB::disableQueryLog();
-            // $student = $this->argument('student');
-            // if (is_int($student) || is_string($student)) {
-            //     $student = Student::find($student);
-            // }
 
             $students = Student::where('tk_id', null)->orderBy('id')->take(75)->get();
 
@@ -63,16 +59,14 @@ class SyncThinkificStudents extends Command
             foreach ($students as $student) {
                 # Se verifica que el usuario tenga una cuenta en thinkific con el correo asociado a Q10, de lo contrario
                 # se le crea una cuenta con sus datos por defecto
-                // if(is_null($student->tk_id)){
                 $student_tk_id = $this->call('thinkific:createQ10student', ['student'=>$student]);
                 if($student_tk_id == 0) {
                     # return false;
                     $bar->advance();
                     continue;
                 }
+                # Se guarda el id de thinkific asociado con el usuario para preservarlo como usuario que ya tiene cuenta
                 $student->tk_id = $student_tk_id;
-                $student->save();
-                // }
 
                 # Se inscribe al usuario en el curso de onboarding
                 $default_course = Tkcourse::where('default', true)->first();
@@ -82,6 +76,7 @@ class SyncThinkificStudents extends Command
                     continue;
                 }
                 $client->enroll_user($student->tk_id, $default_course);
+                $student->save();
                 # return true;
                 sleep(2);
                 $bar->advance();
