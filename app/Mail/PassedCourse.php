@@ -3,12 +3,13 @@
 namespace App\Mail;
 
 use App\Models\Student;
-use App\Models\Course;
+use App\Models\Evaluation;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use PhpParser\Node\Expr\Eval_;
 
 class PassedCourse extends Mailable
 {
@@ -22,21 +23,21 @@ class PassedCourse extends Mailable
     public $student;
 
     /**
-     * The course instance.
+     * The evaluation instance.
      *
-     * @var \App\Models\Course
+     * @var \App\Models\Evaluation
      */
-    public $course;
+    public $evaluation;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(Student $student, Course $course)
+    public function __construct(Student $student, Evaluation $evaluation)
     {
         $this->student = $student;
-        $this->course = $course;
+        $this->evaluation = $evaluation;
     }
 
     /**
@@ -46,8 +47,13 @@ class PassedCourse extends Mailable
      */
     public function build()
     {
-        return $this->subject('Felicitaciones '.$this->student->Primer_Nombre.', ¡aprobaste tu curso!')
+        if(is_null($this->evaluation->Nombre_asignatura)){
+            $name = $this->evaluation->Nombre_curso;
+        } else {
+            $name = $this->evaluation->Nombre_asignatura;
+        }
+        return $this->subject('Felicitaciones '.ucfirst(mb_strtolower($this->student->Primer_nombre, 'UTF-8')).', ¡aprobaste tu curso!')
             ->view('emails.q10.passedCourse',
-            ['student'=>$this->student, 'course'=>$this->course]);
+            ['student'=>$this->student, 'course_name'=>$name]);
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Events;
 
 use App\Models\Student;
-use App\Models\Course;
+use App\Models\Evaluation;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -25,20 +25,20 @@ class Q10StudentPassed
     public $student;
 
     /**
-     * The course instance.
+     * The evaluation instance.
      *
-     * @var \App\Models\Course
+     * @var \App\Models\Evaluation
      */
-    public $course;
+    public $evaluation;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Student $student, Course $course)
+    public function __construct(Evaluation $evaluation, Student $student)
     {
+        $this->evaluation = $evaluation;
         $this->student = $student;
-        $this->course = $course;
     }
 }

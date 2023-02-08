@@ -3,7 +3,7 @@
 namespace App\Events;
 
 use App\Models\Student;
-use App\Models\Course;
+use App\Models\Evaluation;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -18,6 +18,13 @@ class Q10StudentMiss
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
+     * The evaluation instance.
+     *
+     * @var \App\Models\Evaluation
+     */
+    public $evaluation;
+
+    /**
      * The student instance.
      *
      * @var \App\Models\Student
@@ -25,28 +32,13 @@ class Q10StudentMiss
     public $student;
 
     /**
-     * The course instance.
-     *
-     * @var \App\Models\Course
-     */
-    public $course;
-
-    /**
-     * The missed number.
-     *
-     * @var int
-     */
-    public $missed_number;
-
-    /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Student $student, Course $course, $missed_number)
+    public function __construct(Evaluation $evaluation, Student $student)
     {
+        $this->evaluation = $evaluation;
         $this->student = $student;
-        $this->course = $course;
-        $this->missed_number = $missed_number;
     }
 }

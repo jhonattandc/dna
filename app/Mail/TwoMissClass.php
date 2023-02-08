@@ -3,7 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Student;
-use App\Models\Course;
+use App\Models\Evaluation;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,21 +22,21 @@ class TwoMissClass extends Mailable
     public $student;
 
     /**
-     * The course instance.
+     * The evaluation instance.
      *
-     * @var \App\Models\Course
+     * @var \App\Models\Evaluation
      */
-    public $course;
+    public $evaluation;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(Student $student, Course $course)
+    public function __construct(Student $student, Evaluation $evaluation)
     {
         $this->student = $student;
-        $this->course = $course;
+        $this->evaluation = $evaluation;
     }
 
     /**
@@ -46,9 +46,14 @@ class TwoMissClass extends Mailable
      */
     public function build()
     {
+        if(is_null($this->evaluation->Nombre_asignatura)){
+            $name = $this->evaluation->Nombre_curso;
+        } else {
+            $name = $this->evaluation->Nombre_asignatura;
+        }
         return $this->subject('Ya son dos inasistencias ¿tienes algún problema? ')
             ->view('emails.q10.twoMissClass',
-                ['student'=>$this->student, 'course'=>$this->course]
+                ['student'=>$this->student, 'course_name'=>$name]
             );
     }
 }

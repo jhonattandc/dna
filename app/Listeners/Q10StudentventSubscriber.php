@@ -46,12 +46,13 @@ class Q10StudentventSubscriber
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
             return;
         }
-        if ($event->missed_number == 1) {
-            Mail::to($email)->send(new OneMissClass($event->student, $event->course));
-        } elseif ($event->missed_number == 2) {
-            Mail::to($email)->send(new TwoMissClass($event->student, $event->course));
-        } elseif ($event->missed_number == 5) {
-            Mail::to($email)->send(new FiveMissClass($event->student, $event->course));
+        $cantidad_inasistencia = $event->evaluation->Cantidad_inasistencia;
+        if ($cantidad_inasistencia == 1) {
+            Mail::to($email)->send(new OneMissClass($event->student, $event->evaluation));
+        } elseif ($cantidad_inasistencia == 2) {
+            Mail::to($email)->send(new TwoMissClass($event->student, $event->evaluation));
+        } elseif ($cantidad_inasistencia >= 5) {
+            Mail::to($email)->send(new FiveMissClass($event->student, $event->evaluation));
         }
     }
 
@@ -69,7 +70,7 @@ class Q10StudentventSubscriber
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
             return;
         }
-        Mail::to($email)->send(new PassedCourse($event->student, $event->course));
+        Mail::to($email)->send(new PassedCourse($event->student, $event->evaluation));
     }
 
     /**
@@ -86,7 +87,7 @@ class Q10StudentventSubscriber
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
             return;
         }
-        Mail::to($email)->send(new FailedCourse($event->student, $event->course));
+        Mail::to($email)->send(new FailedCourse($event->student, $event->evaluation));
     }
 
     /**

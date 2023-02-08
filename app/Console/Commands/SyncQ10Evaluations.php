@@ -9,9 +9,7 @@ use App\Models\Evaluation;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SyncQ10Evaluations extends Command
 {
@@ -40,6 +38,49 @@ class SyncQ10Evaluations extends Command
     }
 
     /**
+     * Get the combination of programs and terms from a campus. If the term is not active, it is not included.
+     *
+     * @param \App\Models\Campus $campus
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getProgramsTerms($campus){
+        $programs_terms = DB::table('programs')->crossJoin('terms')
+            ->where('programs.campus_id', $campus->id)
+            ->where('terms.campus_id', $campus->id)
+            ->where('Habilitado', true)
+            ->get();
+        return $programs_terms;
+    }
+
+    /**
+     * Get the subject instance from the evaluation object.
+     *
+     * @param \App\Models\Campus $campus
+     * @param array $object_json
+     *
+     * @return \App\Models\Subject
+     */
+    public function getSubject($campus, $object_json){
+        $subject = $campus->subjects()->where('Nombre', $object_json['Nombre_asignatura'])->first();
+        return $subject;
+    }
+
+    /**
+     * Get the course instance from the term.
+     *
+     * @param \App\Models\Term $term
+     * @param array $object_json
+     *
+     * @return \App\Models\Course
+     */
+    public function getCourse($term, $object_json){
+        $course = $term->courses()->where('Codigo', $object_json['Codigo_curso'])
+            ->where('Nombre', $object_json['Nombre_curso'])->first();
+        return $course;
+    }
+
+    /**
      * Execute the console command.
      *
      * @return int
@@ -55,12 +96,7 @@ class SyncQ10Evaluations extends Command
             // Creo un cliente http para consultar el api de Q10
             $client = new Q10API('/evaluaciones', $campus->Secreto);
 
-            $programs_terms = DB::table('programs')->crossJoin('terms')
-                ->where('programs.campus_id', $campus->id)
-                ->where('terms.campus_id', $campus->id)
-                ->where('Habilitado', true)
-                ->get();
-
+            $programs_terms = $this->getProgramsTerms($campus);
             $bar = $this->output->createProgressBar(count($programs_terms));
             $bar->start();
             foreach ($programs_terms as $row) {
@@ -78,13 +114,11 @@ class SyncQ10Evaluations extends Command
 
                 $evaluations = $response->map(function ($object_json) use ($row, $campus) {
                     $term = Term::find($row->id);
-                    $subject = $campus->subjects()->where('Nombre', $object_json['Nombre_asignatura'])->first();
-                    $course = $term->courses()
-                        ->where('Codigo', $object_json['Codigo_curso'])
-                        ->where('Nombre', $object_json['Nombre_curso'])
-                        ->first();
+                    $subject = $this->getSubject($campus, $object_json);
+                    $course = $this->getCourse($term, $object_json);
 
                     if(is_null($subject) && is_null($course)) {
+                        $this->warn("Asignatura ni curso encontrados mientras se procesan las evaluaciones");
                         Log::warning("Asignatura ni curso encontrados mientras se procesan las evaluaciones",
                             [
                                 "Sede"=>$campus->Nombre,
@@ -95,23 +129,29 @@ class SyncQ10Evaluations extends Command
                             ]);
                         return;
                     }
-                    try{
-                        $query = Evaluation::where('Codigo_estudiante', $object_json['Codigo_estudiante']);
-                        $query = !is_null($subject) ? $query->where('subject_id', $subject->id) : $query;
-                        $query = !is_null($course) ? $query->where('course_id', $course->id) : $query;
-                        $evaluation = $query->firstOrFail();
-                        $evaluation->fill($object_json);
-                        $this->call('q10:checkEvaluation', ['evaluation'=>$evaluation]);
-                    } catch (ModelNotFoundException $e) {
-                        $evaluation = new Evaluation($object_json);
-                        $evaluation->subject_id = !is_null($subject) ? $subject->id : null;
-                        $evaluation->course_id = !is_null($course) ? $course->id : null;
-                        Log::debug("Nueva evaluación creada", ['evaluacion'=>$evaluation->id]);
+                    $evaluation_id = $this->call('q10:checkEvaluation', [
+                        'evaluation_json'=>$object_json,
+                        'subject'=>$subject,
+                        'course'=>$course
+                    ]);
+
+                    if ($evaluation_id == 0) {
+                        $this->warn("No se pudo crear la evaluacion");
+                        Log::warning("No se pudo crear la evaluacion",
+                            [
+                                "Sede"=>$campus->Nombre,
+                                "Nombre_asignatura"=>$object_json['Nombre_asignatura'],
+                                "Nombre_periodo"=>$object_json['Nombre_periodo'],
+                                "Nombre_programa"=>$object_json['Nombre_programa'],
+                                "Nombre_curso"=>$object_json['Nombre_curso']
+                            ]);
+                        return;
                     }
-                    $evaluation->save();
-                    return $evaluation;
+                    sleep(0.5);
+                    return Evaluation::find($evaluation_id);
                 });
 
+                sleep(2);
                 $bar->advance();
             }
             $bar->finish();
