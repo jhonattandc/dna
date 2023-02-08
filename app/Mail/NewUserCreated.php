@@ -38,6 +38,6 @@ class NewUserCreated extends Mailable
      */
     public function build()
     {
-        return $this->subject('¡Estas maticulado en Thinkific!')->view('emails.thinkific.newUserCreated', ['student'=>$this->student]);
+        return $this->subject('¡Estas maticulado en DNA Music Online!')->view('emails.thinkific.newUserCreated', ['student'=>$this->student]);
     }
 }

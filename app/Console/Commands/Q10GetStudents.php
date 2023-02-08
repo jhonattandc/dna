@@ -58,6 +58,7 @@ class Q10GetStudents extends Command
 
         $bar = $this->output->createProgressBar(count($users));
         $bar->start();
+        $count = 0;
         foreach ($users as $user) {
             # Se verifica que el usuario es un estudiante
             $is_student = false;
@@ -70,26 +71,29 @@ class Q10GetStudents extends Command
                 $bar->advance();
                 continue;
             }
+            $count = $count + 1;
 
             # Se busca en la base de datos local, si no se encuentra se guardan sus datos
             try {
                 $student = Student::where('Codigo_estudiante', $user['Codigo_persona'])->firstOrFail();
             } catch (ModelNotFoundException $e) {
+                $this->info("Obteniendo datos de estudiante " . $user['Codigo_persona']);
                 $response = $client->get('estudiantes/'.$user['Codigo_persona']);
                 $student_j = json_decode($response->getBody(), true);
-                if($response->getStatusCode() >= 200 && $response->getStatusCode() < 300){
-                    $student = Student::create($student_j);
-                } else {
+                if($response->getStatusCode() > 300){
                     Log::warning("No se pudo obtener el detalle del estudiante", ["code"=>$response->getStatusCode(), "body"=>$response->getBody()]);
                     $this->warn("No se pudo obtener el detalle del estudiante " . $user['Codigo_persona']);
                     $bar->advance();
                     continue;
                 }
+                $student = new Student($student_j);
+                $student->save();
             }
-            sleep(0.1);
+            sleep(0.15);
         }
         $bar->finish();
         $this->info(" ¡Estudiantes sincronizados de ".$campus->Nombre."!");
+        $this->info("Se encontraron ". $count ." estudiantes");
         return 0;
     }
 }

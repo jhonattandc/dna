@@ -192,7 +192,7 @@ class SyncQ10Evaluations extends Command
             $programs_terms = $this->getProgramsTerms($campus);
             $bar = $this->output->createProgressBar(count($programs_terms));
             $bar->start();
-            $this->info('Procesando '.$bar->getMaxSteps().' periodos');
+            $this->info(' Procesando '.$bar->getMaxSteps().' periodos');
             foreach ($programs_terms as $row) {
 
                 $response = $client->get_paginated([
@@ -205,6 +205,8 @@ class SyncQ10Evaluations extends Command
                     'Periodo' => $row->Consecutivo,
                     'Respuesta' => $response->count()
                 ]);
+
+                $this->info(' Procesando '.$response->count().' evaluaciones');
 
                 $evaluations = $response->map(function ($object_json) use ($row, $campus) {
                     $term = Term::find($row->id);
