@@ -51,7 +51,8 @@ class SyncThinkificStudents extends Command
     {
         try {
             DB::disableQueryLog();
-
+            
+            Log::info("Sincronizando estudiantes en thinkific");
             $students = Student::where('tk_id', null)->orderBy('id')->take(75)->get();
 
             $bar = $this->output->createProgressBar(count($students));
@@ -83,6 +84,7 @@ class SyncThinkificStudents extends Command
             }
             $bar->finish();
             $this->info(" ¡Estudiantes sincronizados en thinkific!");
+            Log::info("Estudiantes sincronizados en thinkific");
         } catch (Exception $e) {
             $this->error("Ocurrio un error creando un usuario en thinkificv, revisar el log");
             Log::error("Error creating an User in thinkific", ["exception"=>$e->getMessage()]);

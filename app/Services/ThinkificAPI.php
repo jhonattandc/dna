@@ -79,7 +79,7 @@ class ThinkificAPI extends Client
                 ]
             ]);
             $enrollment = json_decode($enrollments->getBody(), true);
-            Log::debug('User matriculated in onboarding course', ['enrollment'=>$enrollment]);
+            Log::debug('User matriculated in course', ['enrollment'=>$enrollment]);
             return $enrollment;
         } else {
             return null;

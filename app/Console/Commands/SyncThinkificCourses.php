@@ -44,6 +44,7 @@ class SyncThinkificCourses extends Command
      */
     public function handle(ThinkificAPI $client)
     {
+        Log::info("Sincronizando cursos con Thinkific");
         try {
             DB::disableQueryLog();
             $courses = $client->get_paginated('courses');
@@ -70,7 +71,7 @@ class SyncThinkificCourses extends Command
             $this->error("Ocurrio un error creando un usuario en thinkificv, revisar el log");
             Log::error("Error creating an User in thinkific", ["exception"=>$th]);
         }
-
+        Log::info("Sincronización de cursos con Thinkific finalizada");
         return 0;
     }
 }

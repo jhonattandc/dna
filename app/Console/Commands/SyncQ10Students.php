@@ -47,7 +47,9 @@ class SyncQ10Students extends Command
     {
         DB::disableQueryLog();
         foreach (Campus::all() as $campus) {
+            Log::info("Sincronizando estudiantes de {$campus->Nombre}");
             $this->call("q10:getStudents", ["campus"=>$campus]);
+            Log::info("Sincronización de estudiantes de {$campus->Nombre} completada");
         }
     }
 }

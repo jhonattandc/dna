@@ -37,6 +37,14 @@ class Tkcourse extends Model
      */
     public function courses()
     {
-        return $this->hasMany(Course::class);
+        return $this->hasMany(Course::class, 'course_tk_id', 'course_id');
+    }
+
+    /**
+     * Get the subjects for the term.
+     */
+    public function subjects()
+    {
+        return $this->hasMany(Subject::class, 'course_tk_id', 'course_id');
     }
 }

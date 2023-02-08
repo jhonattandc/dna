@@ -40,4 +40,20 @@ class Subject extends Model
     {
         return $this->hasMany(Evaluation::class);
     }
+
+    /**
+     * Get the students that owns the course.
+     */
+    public function students()
+    {
+        return $this->belongsToMany(Student::class);
+    }
+
+    /**
+     * Get the tkcourse that owns the course.
+     */
+    public function tkcourse()
+    {
+        return $this->belongsTo(Tkcourse::class, 'course_tk_id', 'course_id');
+    }
 }

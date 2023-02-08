@@ -4,8 +4,13 @@ namespace App\Console\Commands;
 
 use App\Models\Term;
 use App\Models\Campus;
-use App\Services\Q10API;
 use App\Models\Evaluation;
+use App\Models\Subject;
+use App\Models\Program;
+use App\Models\Course;
+use App\Models\Student;
+
+use App\Services\Q10API;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -81,6 +86,94 @@ class SyncQ10Evaluations extends Command
     }
 
     /**
+     * Get the student instance from evaluation.
+     *
+     * @param array $object_json
+     *
+     * @return \App\Models\Student
+     */
+    public function getStudent($object_json){
+        $student = Student::where('Codigo_estudiante', $object_json['Codigo_estudiante'])->first();
+        return $student;
+    }
+
+    /**
+     * Check if the student is enrolled on the subject.
+     *
+     * @param \App\Models\Course $course
+     * @param \App\Models\Subject $subject
+     *
+     * @return \App\Models\Evaluation
+     */
+    public function checkStudentSubject(Student $student, Subject $subject){
+        try{
+            if (is_null($student->tk_id)){
+                $this->warn('Estudiante no tiene cuenta en Thinkific: ' . $student->Codigo_estudiante);
+                return;
+            }
+
+            if (is_null($subject->tkcourse)){
+                $this->warn('Asignatura ' . $subject->id . ' no tiene curso en Thinkific: ' . $subject->Nombre);
+                return;
+            }
+
+            if (! $student->subjects->contains($subject->id)){
+                $res = $this->call('thinkific:enrollQ10student', ['student' => $student, 'tkcourse_id' => $subject->tkcourse->id]);
+                if ($res != 0){
+                    $this->error('No se pudo matricular el estudiante: ' . $student->Codigo_estudiante . ' - ' . $subject->tkcourse->id);
+                    return;
+                }
+                $student->subjects()->attach($subject->id);
+                Log::debug('Estudiante matriculado', ['Codigo_estudiante' => $student->Codigo_estudiante, 'Curso Thinkific' => $subject->tkcourse->id]);
+                $this->info('Estudiante matriculado: ' . $student->Codigo_estudiante . ' - ' . $subject->tkcourse->id);
+                sleep(1);
+            }
+        } catch (\Exception $e) {
+            Log::error('No se pudo matricular el estudiante', ['Codigo_estudiante' => $student->Codigo_estudiante, 'Subject' => $subject->id, 'Error' => $e->getMessage()]);
+            $this->error('No se pudo matricular el estudiante: ' . $student->Codigo_estudiante . ' - ' . $subject->id);
+        }
+    }
+
+    /**
+     * Check if the student is enrolled on the course.
+     *
+     * @param \App\Models\Course $course
+     * @param \App\Models\Subject $subject
+     *
+     * @return \App\Models\Evaluation
+     */
+    public function checkStudentCourse(Student $student, Course $course){
+        try{
+            if (is_null($student->tk_id)){
+                $this->warn('Estudiante no tiene cuenta en Thinkific: ' . $student->Codigo_estudiante);
+                return;
+            }
+
+            if (is_null($course->tkcourse)){
+                $this->warn('Curso ' . $course->id . ' no tiene curso en Thinkific: '. $course->Nombre);
+                return;
+            }
+
+            if (! $student->courses->contains($course->id)){
+                $res = $this->call('thinkific:enrollQ10student', ['student' => $student, 'tkcourse_id' => $course->tkcourse->id]);
+                if ($res != 0){
+                    $this->error('No se pudo matricular el estudiante: ' . $student->Codigo_estudiante . ' - ' . $course->id);
+                    return;
+                }
+                $student->courses()->attach($course->id);
+                Log::debug('Estudiante matriculado', ['Codigo_estudiante' => $student->Codigo_estudiante, 'Curso Thinkific' => $course->tkcourse->id]);
+                $this->info('Estudiante matriculado: ' . $student->Codigo_estudiante . ' - ' . $course->tkcourse->id);
+                sleep(1);
+            }
+
+
+        } catch (\Throwable $th) {
+            Log::error('No se pudo matricular el estudiante', ['Codigo_estudiante' => $student->Codigo_estudiante, 'Course' => $course->id]);
+            $this->error('No se pudo matricular el estudiante: ' . $student->Codigo_estudiante . ' - ' . $course->id);
+        }
+    }
+
+    /**
      * Execute the console command.
      *
      * @return int
@@ -90,7 +183,7 @@ class SyncQ10Evaluations extends Command
         DB::disableQueryLog();
         //TODO: Revisar Logica
         foreach (Campus::all() as $campus) {
-            Log::debug("Obteniendo todas las evaluciones de un periodo activo", ["Nombre"=>$campus->Nombre]);
+            Log::info("Obteniendo todas las evaluciones de un periodo activo", ["Nombre"=>$campus->Nombre]);
             $this->info('Obteniendo todas las evaluaciones de los periodos activos de '.$campus->Nombre);
 
             // Creo un cliente http para consultar el api de Q10
@@ -99,6 +192,7 @@ class SyncQ10Evaluations extends Command
             $programs_terms = $this->getProgramsTerms($campus);
             $bar = $this->output->createProgressBar(count($programs_terms));
             $bar->start();
+            $this->info('Procesando '.$bar->getMaxSteps().' periodos');
             foreach ($programs_terms as $row) {
 
                 $response = $client->get_paginated([
@@ -147,6 +241,13 @@ class SyncQ10Evaluations extends Command
                             ]);
                         return;
                     }
+                    
+                    $student = $this->getStudent($object_json);
+                    if (! is_null($subject)) {
+                        $this->checkStudentSubject($student, $subject);
+                    } else {
+                        $this->checkStudentCourse($student, $course);
+                    }
                     sleep(0.5);
                     return Evaluation::find($evaluation_id);
                 });
@@ -156,6 +257,7 @@ class SyncQ10Evaluations extends Command
             }
             $bar->finish();
             $this->info(" ¡Evaluaciones sincronizadas de ".$campus->Nombre."!");
+            Log::info("Evaluaciones sincronizadas de ".$campus->Nombre);
         }
         return 0;
     }

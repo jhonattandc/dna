@@ -39,7 +39,7 @@ class Course extends Model
      */
     public function tkcourse()
     {
-        return $this->belongsTo(Tkcourse::class);
+        return $this->belongsTo(Tkcourse::class, 'course_tk_id', 'course_id');
     }
 
     /**
