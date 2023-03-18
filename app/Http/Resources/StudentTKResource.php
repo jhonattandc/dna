@@ -18,7 +18,7 @@ class StudentTKResource extends JsonResource
             'first_name' => $this->Primer_nombre,
             'last_name' => $this->Primer_apellido,
             'email' => $this->Email,
-            'password' =>  "50Je@" . substr($this->Primer_nombre,0,1) . substr($this->Numero_identificacion,0,2)
+            'password' =>  $this->password,
         ];
     }
 }

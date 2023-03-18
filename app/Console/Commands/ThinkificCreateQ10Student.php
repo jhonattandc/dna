@@ -47,7 +47,7 @@ class ThinkificCreateQ10Student extends Command
      */
     public function handle(ThinkificAPI $client)
     {
-        try {
+        // try {
             $student = $this->argument('student');
             if (is_int($student) || is_string($student)) {
                 $student = Student::find($student);
@@ -84,6 +84,8 @@ class ThinkificCreateQ10Student extends Command
             ]);
 
             if($users->count() == 0){
+                $student->password = $student->generatePassword();
+                $student->save();
                 $response = $client->post('users', [
                     'json' => new StudentTKResource($student)
                 ]);
@@ -95,10 +97,10 @@ class ThinkificCreateQ10Student extends Command
             }else {
                 return $users->first()->id;
             }
-        } catch (Exception $e) {
-            $this->error("Ocurrio un error creando un usuario en thinkific, revisar el log");
-            Log::error("Ocurrio un error creando un usuario en thinkific", ["exception"=>$e->getMessage()]);
-        }
+        // } catch (Exception $e) {
+        //     $this->error("Ocurrio un error creando un usuario en thinkific, revisar el log");
+        //     Log::error("Ocurrio un error creando un usuario en thinkific", ["exception"=>$e->getMessage()]);
+        // }
         return 0;
     }
 }
