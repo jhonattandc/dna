@@ -14,6 +14,8 @@ use App\Mail\FiveMissClass;
 use App\Mail\PassedCourse;
 use App\Mail\FailedCourse;
 
+use App\Services\ClientifyAPI;
+
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -30,6 +32,15 @@ class Q10StudentventSubscriber
             return false;
         }
         return true;
+    }
+
+    private function addTagToStudent($student, $tag) {
+        $clientify = new ClientifyAPI();
+        $contacts = $clientify->queryContact($student);
+        if ($contacts->count() > 0) {
+            $contact = $contacts->first();
+            $clientify->addTagToContact($contact->id, $tag);
+        }
     }
 
     /**
