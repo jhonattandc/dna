@@ -22,8 +22,6 @@ use Illuminate\Queue\InteractsWithQueue;
 
 class Q10StudentventSubscriber
 {
-    private $sandbox = "desarrollo@dnamusic.edu.co";
-
     private function validateEmail($email) {
         if (is_null($email)){
             return false;
@@ -54,7 +52,11 @@ class Q10StudentventSubscriber
         if(!$this->validateEmail($email)){
             return;
         }
-        Mail::to($email)->bcc($this->sandbox)->send(new NewUserCreated($event->student));
+        if (env('CLIENTIFY_MAIL') == true) {
+            $this->addTagToStudent($event->student, 'newest');
+        } else {
+            Mail::to($email)->send(new NewUserCreated($event->student));
+        }
     }
 
     /**
@@ -70,11 +72,23 @@ class Q10StudentventSubscriber
         }
         $cantidad_inasistencia = $event->evaluation->Cantidad_inasistencia;
         if ($cantidad_inasistencia == 1) {
-            Mail::to($email)->bcc($this->sandbox)->send(new OneMissClass($event->student, $event->evaluation));
-        } elseif ($cantidad_inasistencia == 2) {
-            Mail::to($email)->bcc($this->sandbox)->send(new TwoMissClass($event->student, $event->evaluation));
+            if (env('CLIENTIFY_MAIL') == true) {
+                $this->addTagToStudent($event->student, 'inasistencia-1');
+            } else {
+                Mail::to($email)->send(new OneMissClass($event->student, $event->evaluation));
+            }
+        } elseif ($cantidad_inasistencia == 3) {
+            if (env('CLIENTIFY_MAIL') == true) {
+                $this->addTagToStudent($event->student, 'inasistencias-3');
+            } else {
+                Mail::to($email)->send(new TwoMissClass($event->student, $event->evaluation));
+            }
         } elseif ($cantidad_inasistencia >= 5) {
-            Mail::to($email)->bcc($this->sandbox)->send(new FiveMissClass($event->student, $event->evaluation));
+            if (env('CLIENTIFY_MAIL') == true) {
+                $this->addTagToStudent($event->student, 'inasistencias-5');
+            } else {
+                Mail::to($email)->send(new FiveMissClass($event->student, $event->evaluation));
+            }
         }
     }
 
@@ -89,7 +103,11 @@ class Q10StudentventSubscriber
         if(!$this->validateEmail($email)){
             return;
         }
-        Mail::to($email)->bcc($this->sandbox)->send(new PassedCourse($event->student, $event->evaluation));
+        if (env('CLIENTIFY_MAIL') == true) {
+            $this->addTagToStudent($event->student, 'materia-aprobada');
+        } else {
+            Mail::to($email)->send(new PassedCourse($event->student, $event->evaluation));
+        }
     }
 
     /**
@@ -103,7 +121,11 @@ class Q10StudentventSubscriber
         if(!$this->validateEmail($email)){
             return;
         }
-        Mail::to($email)->bcc($this->sandbox)->send(new FailedCourse($event->student, $event->evaluation));
+        if (env('CLIENTIFY_MAIL') == true) {
+            $this->addTagToStudent($event->student, 'materia-reprobada');
+        } else {
+            Mail::to($email)->send(new FailedCourse($event->student, $event->evaluation));
+        }
     }
 
     /**

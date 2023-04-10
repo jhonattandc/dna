@@ -38,7 +38,7 @@ class ClientifyAPI extends Client
     {
         $options = [
             'query' => [
-                'query' => $user->email
+                'query' => $user->Email
             ]
         ];
         $response = $this->get('contacts', $options);
@@ -49,13 +49,16 @@ class ClientifyAPI extends Client
     public function addTagToContact($contact_id, $tag)
     {
         try {
-            $response = $this->post('contacts/' . $contact_id . '/tags', [
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
                 'json' => [
                     'name' => $tag
                 ]
-            ]);
-            $body = json_decode($response->getBody());
-            return $body;
+            ];
+            $response = $this->post('contacts/' . $contact_id . '/tags/', $options);
+            return $response;
         } catch (com_exception $e) {
             Log::error($e->getMessage());
             return null;
