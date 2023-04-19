@@ -84,7 +84,8 @@ class ThinkificCreateQ10Student extends Command
             ]);
 
             if($users->count() == 0){
-                $student->password = $student->generatePassword();
+                #$student->password = $student->generatePassword();
+                $student->password = $student->Numero_identificacion;
                 $student->save();
                 $response = $client->post('users', [
                     'json' => new StudentTKResource($student)
