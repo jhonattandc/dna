@@ -29,7 +29,7 @@ class Q10CheckEvaluation extends Command
      *
      * @var string
      */
-    protected $description = 'Check for change in evaluation and dispach the asociate event';
+    protected $description = 'Review the evaluation received, detecting changes in status, number of absences and total evaluation, to generate the triggers.';
 
     /**
      * Create a new command instance.
@@ -75,6 +75,7 @@ class Q10CheckEvaluation extends Command
      * @param mixed $course
      *
      * @return \App\Models\Evaluation
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function getEvaluation($object_json, $subject, $course){
         $query = Evaluation::where('Codigo_estudiante', $object_json['Codigo_estudiante']);
@@ -92,6 +93,7 @@ class Q10CheckEvaluation extends Command
      * @param array $object_json
      *
      * @return \App\Models\Student
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function getStudent($object_json){
         $student = Student::where('Codigo_estudiante', $object_json['Codigo_estudiante'])->firstOrFail();

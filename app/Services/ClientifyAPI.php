@@ -64,4 +64,23 @@ class ClientifyAPI extends Client
             return null;
         }
     }
+
+    public function addPasswordToContact($contact_id, $password)
+    {
+        try {
+            $options = [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
+                'json' => [
+                    'summary' => $password
+                ]
+            ];
+            $response = $this->put('contacts/' . $contact_id . '/', $options);
+            return $response;
+        } catch (com_exception $e) {
+            Log::error($e->getMessage());
+            return null;
+        }
+    }
 }

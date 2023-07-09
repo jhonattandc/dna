@@ -37,6 +37,7 @@ class Q10StudentventSubscriber
         $contacts = $clientify->queryContact($student);
         if ($contacts->count() > 0) {
             $contact = $contacts->first();
+            $clientify->addPasswordToContact($contact->id, $student->password);
             $clientify->addTagToContact($contact->id, $tag);
         }
     }
