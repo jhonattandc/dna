@@ -15,11 +15,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('sync:Q10')->daily()->withoutOverlapping();
-        $schedule->command('sync:TKcourse')->daily()->withoutOverlapping();
-        $schedule->command('sync:Q10evaluations')->everyThirtyMinutes()->withoutOverlapping();
-        $schedule->command('sync:TKstudents')->everyTenMinutes()->withoutOverlapping();
-        $schedule->command('sync:Q10Students')->hourly()->withoutOverlapping();
+        // $schedule->command('sync:Q10')->daily()->withoutOverlapping();
+        // $schedule->command('sync:TKcourse')->daily()->withoutOverlapping();
+        // $schedule->command('sync:Q10evaluations')->everyThirtyMinutes()->withoutOverlapping();
+        // $schedule->command('sync:TKstudents')->everyTenMinutes()->withoutOverlapping();
+        // $schedule->command('sync:Q10Students')->hourly()->withoutOverlapping();
     }
 
     /**
@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
     protected function commands()
     {
         $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__.'/../Q10/Commands');
 
         require base_path('routes/console.php');
     }

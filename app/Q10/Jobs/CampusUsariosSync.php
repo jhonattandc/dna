@@ -1,0 +1,117 @@
+<?php
+
+namespace App\Q10\Jobs;
+
+use App\Q10\Models\Campus;
+use App\Q10\Models\Usuario;
+use App\Q10\Services\Q10API;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+
+class CampusUsariosSync implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * The campus instance.
+     *
+     * @var \App\Q10\Models\Campus
+     */
+    protected $campus;
+
+    /**
+     * The offset for the API pagination.
+     *
+     * @var int
+     */
+    protected $offset;
+
+    /**
+     * The number of item to retrieve from the API.
+     */
+    protected $limit = 35;
+
+    /**
+     * The number of times the job may be attempted.
+     */
+    public $tries = 3;
+
+    /**
+     * The number of seconds the job can run before timing out.
+     */
+    public $timeout = 120;
+
+    /**
+     * Create a new job instance.
+     *
+     * @param  \App\Q10\Models\Campus  $campus
+     * @param  int  $offset
+     *
+     * @return void
+     */
+    public function __construct(Campus $campus, $offset = 1)
+    {
+        $this->campus = $campus;
+        $this->offset = $offset;
+    }
+
+    /**
+     * Get all users instances from the API and sync them with the local database.
+     * Addiotionaly, associate the roles and perfil for each user.
+     *
+     * @param  \App\Q10\Services\Q10API  $httpClient
+     *
+     * @return void
+     */
+    public function handle(Q10API $httpClient)
+    {
+        // Update or create the user instances.
+        $response = $httpClient->get_page('usuarios', [
+            'headers' => [
+                'Api-Key' => $this->campus->Secreto,
+            ],
+            'query' => [
+                'Offset' => $this->offset,
+                'Limit' => $this->limit,
+            ],
+        ]);
+
+        if (!$httpClient->check_end($response)) {
+            CampusUsariosSync::dispatch($this->campus, $this->offset+1);
+        }
+        $collection = $httpClient->get_collection($response);
+
+        foreach ($collection as $object_json) {
+            $user = Usuario::updateOrCreate(
+                ['Codigo_persona' => $object_json['Codigo_persona']],
+                [
+                    'Nombre_completo' => $object_json['Nombre_completo'],
+                    'Numero_identificacion' => $object_json['Numero_identificacion'],
+                    'Nombre_usuario' => $object_json['Nombre_usuario'],
+                ]
+            );
+
+            // Associate the roles for the user.
+            $roles = $object_json['Roles'];
+            foreach ($roles as $role) {
+                $rol = $this->campus->roles()->where('Codigo', $role['Codigo'])->first();
+                if (!$rol) {
+                    continue;
+                }
+                $user->roles()->syncWithoutDetaching($rol->id);
+            }
+
+            // Associate the perfil for the user.
+            $perfil = $this->campus->perfiles()->where('Consecutivo', $object_json['Consecutivo_perfil'])->first();
+            if ($perfil) {
+                $user->perfil()->associate($perfil);
+                $user->save();
+            }
+        }
+    }
+}
