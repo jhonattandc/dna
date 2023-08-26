@@ -69,6 +69,10 @@ class CampusPerfilesSync implements ShouldQueue
      */
     public function handle(Q10API $httpClient)
     {
+        if ($this->batch()->cancelled()) {
+            return;
+        }
+
         // Update or create the role instances.
         $response = $httpClient->get_page('perfiles', [
             'headers' => [
@@ -80,8 +84,14 @@ class CampusPerfilesSync implements ShouldQueue
             ],
         ]);
 
+        if ($response->getStatusCode() != 200) {
+            $this->fail();
+        }
+
         if (!$httpClient->check_end($response)) {
-            CampusPerfilesSync::dispatch($this->campus, $this->offset+1);
+            $this->batch()->add(
+                new CampusPerfilesSync($this->campus, $this->offset+1)
+            );
         }
         $collection = $httpClient->get_collection($response);
 

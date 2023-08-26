@@ -3,8 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\ClientifyDealController;
-use App\Http\Controllers\ClientifyContactController;
+use App\Prosegur\Http\Controllers\AlarmsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,9 +19,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('clientify')->prefix('clientify')->group(function (){
-    Route::post('/contact', [ClientifyContactController::class, 'store']);
-    Route::post('/deal', [ClientifyDealController::class, 'store']);
+Route::prefix('prosegur')->group(function () {
+    // Alarm routes...
+    Route::get('/alarms', [AlarmsController::class, 'index'])->name('prosegur.alarms.index');
 });
 
 Route::fallback(function (){

@@ -45,4 +45,12 @@ class Docente extends Model
     {
         return $this->belongsTo(TipoId::class);
     }
+
+    /**
+     * Get the cursos for the docente.
+     */
+    public function cursos()
+    {
+        return $this->hasMany(Curso::class);
+    }
 }

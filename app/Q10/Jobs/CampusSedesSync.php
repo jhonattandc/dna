@@ -69,6 +69,10 @@ class CampusSedesSync implements ShouldQueue
      */
     public function handle(Q10API $httpClient)
     {
+        if ($this->batch()->cancelled()) {
+            return;
+        }
+
         $response = $httpClient->get_page('sedes', [
             'headers' => [
                 'Api-Key' => $this->campus->Secreto,
@@ -79,8 +83,14 @@ class CampusSedesSync implements ShouldQueue
             ],
         ]);
 
+        if ($response->getStatusCode() != 200) {
+            $this->fail();
+        }
+
         if (!$httpClient->check_end($response)) {
-            CampusSedesSync::dispatch($this->campus, $this->offset+1);
+            $this->batch()->add(
+                new CampusSedesSync($this->campus, $this->offset+1)
+            );
         }
         $collection = $httpClient->get_collection($response);
 

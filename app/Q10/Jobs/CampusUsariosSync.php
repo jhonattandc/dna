@@ -7,6 +7,7 @@ use App\Q10\Models\Usuario;
 use App\Q10\Services\Q10API;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 
 class CampusUsariosSync implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The campus instance.
@@ -70,6 +71,10 @@ class CampusUsariosSync implements ShouldQueue
      */
     public function handle(Q10API $httpClient)
     {
+        if ($this->batch()->cancelled()) {
+            return;
+        }
+
         // Update or create the user instances.
         $response = $httpClient->get_page('usuarios', [
             'headers' => [
@@ -81,8 +86,14 @@ class CampusUsariosSync implements ShouldQueue
             ],
         ]);
 
+        if ($response->getStatusCode() != 200) {
+            $this->fail();
+        }
+
         if (!$httpClient->check_end($response)) {
-            CampusUsariosSync::dispatch($this->campus, $this->offset+1);
+            $this->batch()->add(
+                new CampusUsariosSync($this->campus, $this->offset+1)
+            );
         }
         $collection = $httpClient->get_collection($response);
 
@@ -102,6 +113,11 @@ class CampusUsariosSync implements ShouldQueue
                 $rol = $this->campus->roles()->where('Codigo', $role['Codigo'])->first();
                 if (!$rol) {
                     continue;
+                }
+                if ($rol->Nombre == 'Estudiante') {
+                    $this->batch()->add(
+                        new CampusEstudianteSync($this->campus, $object_json['Codigo_persona'])
+                    );
                 }
                 $user->roles()->syncWithoutDetaching($rol->id);
             }

@@ -8,6 +8,7 @@ use App\Q10\Models\Usuario;
 use App\Q10\Services\Q10API;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,7 +17,7 @@ use Illuminate\Queue\SerializesModels;
 
 class CampusDocentesSync implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The campus instance.
@@ -70,6 +71,10 @@ class CampusDocentesSync implements ShouldQueue
      */
     public function handle(Q10API $httpClient)
     {
+        if ($this->batch()->cancelled()) {
+            return;
+        }
+
         $response = $httpClient->get_page('administrativos', [
             'headers' => [
                 'Api-Key' => $this->campus->Secreto,
@@ -80,8 +85,14 @@ class CampusDocentesSync implements ShouldQueue
             ],
         ]);
 
+        if ($response->getStatusCode() != 200) {
+            $this->fail();
+        }
+
         if (!$httpClient->check_end($response)) {
-            CampusDocentesSync::dispatch($this->campus, $this->offset+1);
+            $this->batch()->add(
+                new CampusDocentesSync($this->campus, $this->offset+1)
+            );
         }
         $collection = $httpClient->get_collection($response);
 

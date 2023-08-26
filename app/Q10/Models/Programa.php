@@ -38,4 +38,12 @@ class Programa extends Model
     {
         return $this->belongsTo(Campus::class);
     }
+
+    /**
+     * Get the cursos that owns the programa.
+     */
+    public function cursos()
+    {
+        return $this->hasMany(Curso::class);
+    }
 }

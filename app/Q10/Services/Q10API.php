@@ -21,7 +21,7 @@ class Q10API extends Client
      */
     public function __construct(array $config = [])
     {
-        $config['base_uri'] = env('Q10_URL');
+        $config['base_uri'] = config('app.integrations.q10.url');
         $headers = array_key_exists('headers', $config) ? $config['headers']: [];
         $config['headers'] = array_merge(
             ['Cache-Control' => 'no-cache'],
@@ -87,17 +87,12 @@ class Q10API extends Client
                 sleep(60);
                 return $this->get_page($uri, $options);
             } else {
-                Log::error("Http Code <<{$e->getResponse()->getStatusCode()}>> en la petición a Q10", [
-                    'body' => Psr7\Message::toString($e->getResponse())
-                ]);
-                // TODO: CHANGE THIS return collect([]);
+                Log::error("Http Code <<{$e->getResponse()->getStatusCode()}>> en la petición a Q10");
+                return $e;
             }
         } catch (ServerException $e) {
-            // If the server respond with a server error, we log the response body
-            Log::error("Http Code <<{$e->getResponse()->getStatusCode()}>> en la petición a Q10", [
-                'body' => Psr7\Message::toString($e->getResponse())
-            ]);
-            // TODO: CHANGE THIS return collect([]);
+            Log::error("Http Code <<{$e->getResponse()->getStatusCode()}>> en la petición a Q10");
+            return $e;
         }
         return $response;
     }
@@ -119,7 +114,18 @@ class Q10API extends Client
             $options['query']['Offset'] = $options['query']['Offset'] + 1;
             return $this->get_collection($response)->merge($this->get_paginated($uri, $options));
         }
+    }
 
-        $collection = $this->get_collection($response);
+    /**
+     * Execute a GET request with the API key to the specified path and return the page headers.
+     * 
+     * @param str $uri
+     * @param array $options
+     * 
+     * @return array
+     */
+    public function get_page_headers($uri, array $options = []){
+        $response = $this->get_page($uri, $options);
+        return $response->getHeaders();
     }
 }

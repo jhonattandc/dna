@@ -6,6 +6,7 @@ use App\Q10\Models\Campus;
 use App\Q10\Services\Q10API;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -13,7 +14,7 @@ use Illuminate\Queue\SerializesModels;
 
 class CampusTiposIdSync implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The campus instance.
@@ -67,6 +68,10 @@ class CampusTiposIdSync implements ShouldQueue
      */
     public function handle(Q10API $httpClient)
     {
+        if ($this->batch()->cancelled()) {
+            return;
+        }
+
         $response = $httpClient->get_page('tiposidentificacion', [
             'headers' => [
                 'Api-Key' => $this->campus->Secreto,
@@ -77,8 +82,14 @@ class CampusTiposIdSync implements ShouldQueue
             ],
         ]);
 
+        if ($response->getStatusCode() != 200) {
+            $this->fail();
+        }
+
         if (!$httpClient->check_end($response)) {
-            CampusTiposIdSync::dispatch($this->campus, $this->offset+1);
+            $this->batch()->add(
+                new CampusTiposIdSync($this->campus, $this->offset+1)
+            );
         }
         $collection = $httpClient->get_collection($response);
 

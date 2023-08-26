@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CampusController;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,10 +14,13 @@ use App\Http\Controllers\CampusController;
 |
 */
 
-// Route::get('/home', function () {
-//     return view('admin.home');
-// })->middleware(['auth'])->name('home');
+Route::middleware(['auth'])->group(function () {
+    Route::resource('home', CampusController::class);
 
-Route::resource('home', CampusController::class)->middleware(['auth']);
+    Route::get('/prosegur/alarms', function () {
+        return view('prosegur.alarms.index');
+    })->name('prosegur/alarms');
+});
+
 
 require __DIR__.'/auth.php';

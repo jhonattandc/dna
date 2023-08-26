@@ -77,10 +77,34 @@ class Campus extends Model
     }
 
     /**
+     * Get the jornada_sedes for the campus through the sedes.
+     */
+    public function jornada_sedes()
+    {
+        return $this->hasManyThrough(JornadaSede::class, Sede::class);
+    }
+
+    /**
      * Get the jornadas for the campus.
      */
     public function jornadas()
     {
         return $this->hasMany(Jornada::class);
+    }
+
+    /**
+     * Get the asignaturas for the campus.
+     */
+    public function asignaturas()
+    {
+        return $this->hasMany(Asignatura::class);
+    }
+
+    /**
+     * Get the niveles for the campus.
+     */
+    public function niveles()
+    {
+        return $this->hasMany(Nivel::class);
     }
 }
