@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         \Webklex\IMAP\Commands\ImapIdleCommand::class,
     ];
-    
+
     /**
      * Define the application's command schedule.
      *

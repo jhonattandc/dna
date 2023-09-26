@@ -57,7 +57,7 @@ class ClientifyAPI extends Client
         } catch (ServerException $e) {
             Log::error('Error en la consulta a Clientify', ['error'=>$e->getMessage()]);
             return $e;
-        }   
+        }
     }
 
     public function add_tag_contact($contact_id, $tag)

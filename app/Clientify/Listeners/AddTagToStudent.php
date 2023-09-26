@@ -18,6 +18,27 @@ class AddTagToStudent implements ShouldQueue
     protected $client;
 
     /**
+     * The time (seconds) before the job should be processed.
+     *
+     * @var int
+     */
+    public $delay = 60;
+
+    /**
+     * The number of seconds the job can run before timing out.
+     * 
+     * @var int
+     */
+    public $timeout = 180;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 3;
+
+    /**
      * Create the event listener.
      *
      * @return void
