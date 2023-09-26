@@ -61,4 +61,12 @@ class Curso extends Model
     {
         return $this->belongsTo(Docente::class);
     }
+
+    /**
+     * Get the evaluations for the course.
+     */
+    public function evaluaciones()
+    {
+        return $this->hasMany(Evaluacion::class);
+    }
 }

@@ -25,6 +25,11 @@ class NewStudent
     public $student;
 
     /**
+     * The tag to add to the student.
+     */
+    public $tag = 'newest';
+
+    /**
      * Create a new event instance.
      *
      * @return void

@@ -20,7 +20,7 @@ class CreateRolesTable extends Migration
             $table->string('Nombre')->nullable();
             $table->timestamps();
 
-            $table->foreign('campus_id')->references('id')->on('campuses');
+            $table->foreign('campus_id')->references('id')->on('campus');
         });
     }
 

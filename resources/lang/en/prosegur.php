@@ -8,6 +8,7 @@ return [
     | The following language lines are used by the Prosegur application.
     |
     */
+    "title" => "Prosegur",
     "alarms" => [
         "menu" => "Notifications",
         "title" => "Prosegur events",

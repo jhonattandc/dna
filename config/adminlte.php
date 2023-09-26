@@ -237,26 +237,41 @@ return [
             'topnav' => false,
         ],
         [
-            "text" => "Home",
+            "text" => "Inicio",
             "url" => "home",
             "icon" => "fas fa-fw fa-home"
+        ],
+        [
+            "text" => "Usuarios",
+            "url" => "users",
+            "icon" => "fas fa-fw fa-users",
         ],
         [
             'text' => 'Panel de control',
             'url'  => 'horizon',
             'icon' => 'fas fa-tachometer-alt',
             'target' => '_blank',
-            //'can'  => 'admin-horizon'
+            'can'  => 'manage:horizon'
         ],
         [
-            'header' => 'Prosegur',
-            //'can'  => 'admin-prosegur'
+            'header' => 'Base de datos - Prosegur',
+            'can'  => 'manage:prosegur'
         ],
         [
             'text' => 'Alarmas',
             'url'  => 'prosegur/alarms',
-            'icon' => 'fas fa-fw fa-bell'
-            //'can'  => 'admin-prosegur'
+            'icon' => 'fas fa-fw fa-bell',
+            'can'  => 'manage:prosegur'
+        ],
+        [
+            'header' => 'Base de datos - Thinkific',
+            'can'  => 'manage:campus'
+        ],
+        [
+            'text' => 'Cursos',
+            'url'  => 'thinkific/courses',
+            'icon' => 'fas fa-fw fa-book',
+            'can'  => 'manage:campus'
         ],
     ],
 
@@ -366,16 +381,16 @@ return [
             ],
         ],
         'Select2' => [
-            'active' => false,
+            'active' => true,
             'files' => [
                 [
                     'type' => 'js',
-                    'asset' => false,
+                    'asset' => true,
                     'location' => '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js',
                 ],
                 [
                     'type' => 'css',
-                    'asset' => false,
+                    'asset' => true,
                     'location' => '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css',
                 ],
             ],

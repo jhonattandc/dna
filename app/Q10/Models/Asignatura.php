@@ -38,4 +38,12 @@ class Asignatura extends Model
     {
         return $this->belongsTo(Campus::class);
     }
+
+    /**
+     * Get the evaluation for the subject.
+     */
+    public function evaluaciones()
+    {
+        return $this->hasMany(Evaluacion::class);
+    }
 }

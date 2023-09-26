@@ -22,7 +22,7 @@ class CreateNivelesTable extends Migration
             $table->boolean('Estado')->default(false)->nullable();
             $table->timestamps();
 
-            $table->foreign('campus_id')->references('id')->on('campuses');
+            $table->foreign('campus_id')->references('id')->on('campus');
         });
     }
 

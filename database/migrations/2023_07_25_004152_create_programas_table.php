@@ -27,7 +27,7 @@ class CreateProgramasTable extends Migration
             $table->boolean('Estado')->default(false);
             $table->timestamps();
 
-            $table->foreign('campus_id')->references('id')->on('campuses');
+            $table->foreign('campus_id')->references('id')->on('campus');
         });
     }
 

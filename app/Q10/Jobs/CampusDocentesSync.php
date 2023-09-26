@@ -75,7 +75,7 @@ class CampusDocentesSync implements ShouldQueue
             return;
         }
 
-        $response = $httpClient->get_page('administrativos', [
+        $response = $httpClient->get_page('docentes', [
             'headers' => [
                 'Api-Key' => $this->campus->Secreto,
             ],

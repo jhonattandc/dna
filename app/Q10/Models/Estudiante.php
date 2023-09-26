@@ -2,9 +2,10 @@
 
 namespace App\Q10\Models;
 
+use App\Thinkific\Models\Student as ThinkificStudent;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class Estudiante extends Model
 {
@@ -64,8 +65,19 @@ class Estudiante extends Model
         return $this->belongsToMany(Curso::class)->withTimestamps();
     }
 
-    public function generatePassword()
+    /**
+     * The evaluation that own the students.
+     */
+    public function evaluaciones()
     {
-        return Str::random(8);
+        return $this->hasMany(Evaluacion::class);
+    }
+
+    /**
+     * The thinkific user that belong to the students.
+     */
+    public function thinkific_user()
+    {
+        return $this->hasOne(ThinkificStudent::class);
     }
 }

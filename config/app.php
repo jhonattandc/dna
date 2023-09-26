@@ -80,7 +80,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'es',
 
     /*
     |--------------------------------------------------------------------------
@@ -143,7 +143,7 @@ return [
         ],
         'thinkific' => [
             'url' => env('THINKIFIC_URL'),
-            'key' => env('THINKIFIC_KEY'),
+            'api_key' => env('THINKIFIC_KEY'),
             'subdomain' => env('THINKIFIC_SUBDOMAIN'),
         ],
     ],

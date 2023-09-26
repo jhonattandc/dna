@@ -54,11 +54,14 @@ class Q10API extends Client
         if (intval($response->getHeader("x-paging-pagecount")[0]) > 0){
             if(intval($response->getHeader('x-paging-pagenumber')[0]) >= intval($response->getHeader('x-paging-pagecount')[0])){
                 return true;
+            } else {
+                return false;
             }
         } elseif($this->get_collection($response)->count() == 0) {
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     /**

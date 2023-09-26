@@ -22,7 +22,7 @@ class CreateTiposIdentificacionTable extends Migration
             $table->boolean('Estado')->default(true);
             $table->timestamps();
 
-            $table->foreign('campus_id')->references('id')->on('campuses');
+            $table->foreign('campus_id')->references('id')->on('campus');
         });
     }
 

@@ -41,4 +41,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * The permissions that belong to the user.
+     */
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class)->withTimestamps();
+    }
 }

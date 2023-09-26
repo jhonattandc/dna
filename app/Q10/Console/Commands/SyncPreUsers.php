@@ -7,7 +7,6 @@ use App\Q10\Models\Campus;
 use App\Q10\Jobs\CampusRolesSync;
 use App\Q10\Jobs\CampusPerfilesSync;
 use App\Q10\Jobs\CampusTiposIdSync;
-use App\Q10\Jobs\CampusUsariosSync;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;

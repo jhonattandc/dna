@@ -73,24 +73,6 @@ class CampusEstudianteSync implements ShouldQueue
         $this->offset = $offset;
     }
 
-    private function fill_student(Estudiante $estudiante, array $object_json)
-    {
-        $estudiante->Primer_nombre = $object_json['Primer_nombre'];
-        $estudiante->Segundo_nombre = $object_json['Segundo_nombre'];
-        $estudiante->Primer_apellido = $object_json['Primer_apellido'];
-        $estudiante->Segundo_apellido = $object_json['Segundo_apellido'];
-        $estudiante->Numero_identificacion = $object_json['Numero_identificacion'];
-        $estudiante->Genero = $object_json['Genero'];
-        $estudiante->Email = $object_json['Email'];
-        $estudiante->Telefono = $object_json['Telefono'];
-        $estudiante->Celular = $object_json['Celular'];
-        $estudiante->Fecha_nacimiento = $object_json['Fecha_nacimiento'];
-        $estudiante->Lugar_nacimiento = $object_json['Lugar_nacimiento'];
-        $estudiante->Lugar_residencia = $object_json['Lugar_residencia'];
-        $estudiante->Direccion = $object_json['Direccion'];
-        $estudiante->save();
-    }
-
     /**
      * Execute the job.
      *
@@ -118,12 +100,14 @@ class CampusEstudianteSync implements ShouldQueue
 
         if (Estudiante::where('Codigo', $student_json['Codigo_estudiante'])->exists()) {
             $estudiante = Estudiante::where('Codigo', $student_json['Codigo_estudiante'])->first();
-            $this->fill_student($estudiante, $student_json);
+            $estudiante->fill($student_json);
+            $estudiante->save();
         } else {
             $estudiante = new Estudiante();
             $estudiante->Codigo = $student_json['Codigo_estudiante'];
-            $this->fill_student($estudiante, $student_json);
-            NewStudent::dispatch($estudiante);
+            $estudiante->fill($student_json);
+            $estudiante->save();
+            event(new NewStudent($estudiante));
         }
 
         // Associate the usuario for the estudiante.

@@ -10,6 +10,11 @@ class Campus extends Model
     use HasFactory;
 
     /**
+     * The table that should be used by the model.
+     */
+    protected $table = 'campus';
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
