@@ -28,8 +28,11 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewHorizon', function ($user) {
-            return in_array($user->email, [
-                //
+            return $user->permissions->pluck('gate')->contains('manage:horizon') || in_array($user->email, [
+                "sgdurnacaro@gmail.com",
+                "jhonattanduran@dnamusic.edu.co",
+                "leidynino@dnamusic.edu.co",
+                "davidnajera@dnamusic.edu.co"
             ]);
         });
     }
