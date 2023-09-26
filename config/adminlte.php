@@ -245,6 +245,7 @@ return [
             "text" => "Usuarios",
             "url" => "users",
             "icon" => "fas fa-fw fa-users",
+            'can'  => 'manage:users'
         ],
         [
             'text' => 'Panel de control',

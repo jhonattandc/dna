@@ -15,7 +15,7 @@ class PermissionsSeeder extends Seeder
      * @var array<string, string>
      */
     protected $permissions = [
-        'user' => 'Can view, create, edit, and delete users',
+        'users' => 'Can view, create, edit, and delete users',
         'campus' => 'Can view and export campus related information',
         'prosegur' => 'Can view and export Prosegur alarms',
         'horizon' => 'Can view the Horizon dashboard',
