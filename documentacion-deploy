@@ -1,0 +1,41 @@
+CREATE USER 'Tadpole5159'@'localhost' IDENTIFIED WITH mysql_native_password BY '4W1e5$5Qbt]A';
+
+CREATE DATABASE db_dnasync;
+
+GRANT PRIVILEGE ON db_dnasync TO 'Tadpole5159'@'localhost';
+
+GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'Tadpole5159'@'localhost' WITH GRANT OPTION;
+
+[program:horizon]
+process_name=%(program_name)s
+command=php /var/www/instance-1.dnatesting.dev/html/artisan horizon
+autostart=true
+autorestart=true
+user=www-data
+redirect_stderr=true
+stdout_logfile=/var/www/instance-1.dnatesting.dev/html/storage/logs/horizon.log
+stopwaitsecs=3600
+
+[program:imap]
+process_name=%(program_name)s
+command=php /var/www/instance-1.dnatesting.dev/html/artisan imap:idle
+autostart=true
+autorestart=true
+user=www-data
+redirect_stderr=true
+stdout_logfile=/var/www/instance-1.dnatesting.dev/html/storage/logs/imap-idle.log
+stopwaitsecs=3600
+
+* * * * * cd /var/www/instance-1.dnatesting.dev/html && php artisan schedule:run >> /dev/null 2>&1
+
+
+---------------------------------------------- DOCUMENTACION ----------------------------------------------------------------------------------
+
+https://laravel.com/docs/8.x/scheduling#running-the-scheduler-locally
+https://laravel.com/docs/8.x/horizon#deploying-horizon
+https://laraveldaily.com/post/how-to-deploy-laravel-projects-to-live-server-the-ultimate-guide
+https://tecadmin.net/how-to-install-redis-on-debian-11/
+https://www.digitalocean.com/community/tutorials/how-to-create-a-new-user-and-grant-permissions-in-mysql
+https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04
+https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04#step-5-%E2%80%93-setting-up-server-blocks-(recommended)
+https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-supervisor-on-ubuntu-and-debian-vps
